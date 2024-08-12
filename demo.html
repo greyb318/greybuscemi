@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Demo</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #f0f0f0;
+      font-family: Arial, sans-serif;
+    }
+    .container {
+      position: relative;
+      width: 80%;
+      height: 80%;
+      border: 2px solid #333;
+    }
+    .image {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      cursor: grab;
+      transition: transform 0.3s ease;
+    }
+    #image1 {
+      top: 20%;
+      left: 20%;
+    }
+    #image2 {
+      top: 60%;
+      left: 60%;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img id="image1" src="IMG_0003-2-3.jpg" alt="Image 1" class="image">
+    <img id="image2" src="IMG_5437.JPG" alt="Image 2" class="image">
+  </div>
+
+  <script>
+    const image1 = document.getElementById('image1');
+    const image2 = document.getElementById('image2');
+    let draggingImage = null;
+
+    image1.addEventListener('mousedown', startDrag);
+    image2.addEventListener('mousedown', startDrag);
+
+    function startDrag(e) {
+      draggingImage = e.target;
+      draggingImage.style.cursor = 'grabbing';
+      document.addEventListener('mousemove', drag);
+      document.addEventListener('mouseup', stopDrag);
+    }
+
+    function drag(e) {
+      const containerRect = document.querySelector('.container').getBoundingClientRect();
+      let x = e.clientX - containerRect.left - draggingImage.clientWidth / 2;
+      let y = e.clientY - containerRect.top - draggingImage.clientHeight / 2;
+
+      // Constrain the drag within the container
+      x = Math.max(0, Math.min(x, containerRect.width - draggingImage.clientWidth));
+      y = Math.max(0, Math.min(y, containerRect.height - draggingImage.clientHeight));
+
+      draggingImage.style.left = x + 'px';
+      draggingImage.style.top = y + 'px';
+
+      if (isOverlapping(image1, image2)) {
+        repositionImages();
+      }
+    }
+
+    function stopDrag() {
+      draggingImage.style.cursor = 'grab';
+      document.removeEventListener('mousemove', drag);
+      document.removeEventListener('mouseup', stopDrag);
+      draggingImage = null;
+    }
+
+    function isOverlapping(img1, img2) {
+      const rect1 = img1.getBoundingClientRect();
+      const rect2 = img2.getBoundingClientRect();
+      return !(rect1.right < rect2.left ||
+               rect1.left > rect2.right ||
+               rect1.bottom < rect2.top ||
+               rect1.top > rect2.bottom);
+    }
+
+    function repositionImages() {
+      image1.style.transform = 'translate(50%, -50%)';
+      image2.style.transform = 'translate(-50%, 50%)';
+      setTimeout(() => {
+        image1.style.left = '20%';
+        image1.style.top = '60%';
+        image2.style.left = '60%';
+        image2.style.top = '20%';
+        image1.style.transform = 'translate(0, 0)';
+        image2.style.transform = 'translate(0, 0)';
+      }, 300);
+    }
+  </script>
+</body>
+</html>
