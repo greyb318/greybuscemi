@@ -138,33 +138,29 @@
   <div class="location-text" id="location">Fetching location...</div>
 
   <script>
-  async function fetchLocation() {
-    try {
+    async function fetchLocation() {
+      const locationElement = document.getElementById("location");
+      try {
         const response = await fetch("https://ipinfo.io/json?token=30f4a4f5fc621f"); // Replace with your token
         const data = await response.json();
         const { city, region, country, ip } = data;
 
-        // Display the data on the page
-        const locationElement = document.createElement("div");
-        locationElement.style.color = "white";
-        locationElement.style.position = "fixed";
-        locationElement.style.bottom = "5%";
-        locationElement.style.right = "5%";
-        locationElement.innerHTML = Location: ${city}, ${region}, ${country} <br> IP: ${ip};
-        document.body.appendChild(locationElement);
+        // Update the location text with fetched data
+        locationElement.innerHTML = `Location: ${city}, ${region}, ${country} <br> IP: ${ip}`;
 
-        // Send data to your backend
+        // Send data to your backend (optional)
         await fetch("/log-location", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ city, region, country, ip }),
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ city, region, country, ip }),
         });
-    } catch (error) {
+      } catch (error) {
         console.error("Error fetching location:", error);
+        locationElement.innerHTML = "Unable to fetch location.";
+      }
     }
-}
 
-fetchLocation();
+    fetchLocation();
   </script>
 </body>
 </html>
